@@ -1,3 +1,6 @@
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,19 +9,19 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
- 
+
 #define MAXRCVLEN 1024
 
 int _connect(void);
-int read_data(int, char *);
-void parse_regs(char *);
-void parse_inst(char *, char *);
+int read_data(int, uint8_t *);
+void parse_regs(uint8_t *);
+void parse_inst(uint8_t *, uint8_t *);
 
-int main(int argc, char *argv[])
+int main(int argc, uint8_t *argv[])
 {
     int len, sock;
-    char buff[MAXRCVLEN + 1];
-    char shellcode[256];
+    uint8_t buff[MAXRCVLEN + 1];
+    uint8_t shellcode[256];
 
     sock = _connect();
 
@@ -32,9 +35,15 @@ int main(int argc, char *argv[])
 
     parse_inst(buff, shellcode);
 
+    uint8_t * addr = mmap(shellcode, len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
+    if (addr == MAP_FAILED)
+    {
+        printf("mmap fuck up. \n");
+    }
+    memcpy(addr,shellcode,len);
     int (*func)();
 
-    func = (int (*)()) shellcode;
+    func = (int (*)()) addr;
 
     (int)(*func)();
 
@@ -44,11 +53,11 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void parse_inst(char * buff, char * shellcode) {
-    char * str;
-    char * prep;
-    char * inst;
-    char slen[3];
+void parse_inst(uint8_t * buff, uint8_t * shellcode) {
+    uint8_t * str;
+    uint8_t * prep;
+    uint8_t * inst;
+    uint8_t slen[3];
     int len;
 
     str = strstr(buff, "About to send");
@@ -66,7 +75,7 @@ void parse_inst(char * buff, char * shellcode) {
     //printf("inst: %s\n", inst);
 
     int i;
-    char x;
+    uint8_t x;
     for(i=0; i < len; i++) {
         x = inst[i];
         printf("%02X ", x & 0xff);
@@ -74,27 +83,27 @@ void parse_inst(char * buff, char * shellcode) {
     printf("\n");
 }
 
-void parse_regs(char * buff) {
-    char * reg;
-    char * val;
-    char * tofree;
-    char * string;
-    char * line;
+void parse_regs(uint8_t * buff) {
+    uint8_t * reg;
+    uint8_t * val;
+    uint8_t * tofree;
+    uint8_t * string;
+    uint8_t * line;
 
-    register int rax asm("rax");
-    register int rbx asm("rbx");
-    register int rcx asm("rcx");
-    register int rdx asm("rdx");
-    register int rsi asm("rsi");
-    register int rdi asm("rdi");
-    register int r8 asm("r8");
-    register int r9 asm("r9");
-    register int r10 asm("r10");
-    register int r11 asm("r11");
-    register int r12 asm("r12");
-    register int r13 asm("r13");
-    register int r14 asm("r14");
-    register int r15 asm("r15");
+    register uint64_t rax asm("rax");
+    register uint64_t rbx asm("rbx");
+    register uint64_t rcx asm("rcx");
+    register uint64_t rdx asm("rdx");
+    register uint64_t rsi asm("rsi");
+    register uint64_t rdi asm("rdi");
+    register uint64_t r8 asm("r8");
+    register uint64_t r9 asm("r9");
+    register uint64_t r10 asm("r10");
+    register uint64_t r11 asm("r11");
+    register uint64_t r12 asm("r12");
+    register uint64_t r13 asm("r13");
+    register uint64_t r14 asm("r14");
+    register uint64_t r15 asm("r15");
 
     string = strdup(buff);
 
@@ -147,7 +156,7 @@ int _connect(void) {
 }
 
 
-int read_data(int sock, char * buff) {
+int read_data(int sock, uint8_t * buff) {
     int len;
 
     len = recv(sock, buff, MAXRCVLEN, 0);
