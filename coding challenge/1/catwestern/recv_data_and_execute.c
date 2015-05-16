@@ -16,22 +16,56 @@ int _connect(void);
 int read_data(int, uint8_t *);
 void parse_regs(uint8_t *);
 void parse_inst(uint8_t *, uint8_t *);
+void registers_to_str(char *);
+
+uint64_t rax;
+uint64_t rbx;
+uint64_t rcx;
+uint64_t rdx;
+uint64_t rsi;
+uint64_t rdi;
+uint64_t r8;
+uint64_t r9;
+uint64_t r10;
+uint64_t r11;
+uint64_t r12;
+uint64_t r13;
+uint64_t r14;
+uint64_t r15;
 
 int main(int argc, uint8_t *argv[])
 {
     int len, sock;
     uint8_t buff[MAXRCVLEN + 1];
     uint8_t shellcode[256];
+    char * response[1024];
 
     sock = _connect();
 
     len = read_data(sock, buff);
-    printf("Received %s (%d bytes).\n", buff, len);
+    printf("%s", buff, len);
+
+    register *rax asm("rax");
+    register *rbx asm("rbx");
+    register *rcx asm("rcx");
+    register *rdx asm("rdx");
+    register *rsi asm("rsi");
+    register *rdi asm("rdi");
+    register *r8 asm("r8");
+    register *r9 asm("r9");
+    register *r10 asm("r10");
+    register *r11 asm("r11");
+    register *r12 asm("r12");
+    register *r13 asm("r13");
+    register *r14 asm("r14");
+    register *r15 asm("r15");
 
     parse_regs(buff);
+    registers_to_str(response);
+    printf("\n=====\nregisters (load):\n%s\n=====\n", response);
 
     len = read_data(sock, buff);
-    printf("Received %s (%d bytes).\n", buff, len);
+    printf("%s", buff, len);
 
     parse_inst(buff, shellcode);
 
@@ -41,16 +75,32 @@ int main(int argc, uint8_t *argv[])
         printf("mmap fuck up. \n");
     }
     memcpy(addr,shellcode,len);
+
+
     int (*func)();
-
     func = (int (*)()) addr;
-
     (int)(*func)();
+
+    registers_to_str(response);
+    printf("\n=====\nregisters (exec):\n%s\n=====\n", response);
+
+    printf("Sending solution:\n%s\n", response);
+
+    write(sock, response, strlen(response));
+
+    len = read_data(sock, buff);
+    printf("%s", buff, len);
 
 
     close(sock);
 
     return EXIT_SUCCESS;
+}
+
+void registers_to_str(char * output) {
+    sprintf(output, 
+        "rax=0x%llx\nrbx=0x%llx\nrcx=0x%llx\nrdx=0x%llx\nrsi=0x%llx\nrdi=0x%llx\nr8=0x%llx\nr9=0x%llx\nr10=0x%llx\nr11=0x%llx\nr12=0x%llx\nr13=0x%llx\nr14=0x%llx\nr15=0x%llx\n", 
+        rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
 }
 
 void parse_inst(uint8_t * buff, uint8_t * shellcode) {
@@ -78,9 +128,10 @@ void parse_inst(uint8_t * buff, uint8_t * shellcode) {
     uint8_t x;
     for(i=0; i < len; i++) {
         x = inst[i];
-        printf("%02X ", x & 0xff);
+        //printf("%02X ", x & 0xff);
+        shellcode[i] = inst[i];
     }
-    printf("\n");
+    //printf("\n");
 }
 
 void parse_regs(uint8_t * buff) {
@@ -89,21 +140,6 @@ void parse_regs(uint8_t * buff) {
     uint8_t * tofree;
     uint8_t * string;
     uint8_t * line;
-
-    register uint64_t rax asm("rax");
-    register uint64_t rbx asm("rbx");
-    register uint64_t rcx asm("rcx");
-    register uint64_t rdx asm("rdx");
-    register uint64_t rsi asm("rsi");
-    register uint64_t rdi asm("rdi");
-    register uint64_t r8 asm("r8");
-    register uint64_t r9 asm("r9");
-    register uint64_t r10 asm("r10");
-    register uint64_t r11 asm("r11");
-    register uint64_t r12 asm("r12");
-    register uint64_t r13 asm("r13");
-    register uint64_t r14 asm("r14");
-    register uint64_t r15 asm("r15");
 
     string = strdup(buff);
 
@@ -118,22 +154,26 @@ void parse_regs(uint8_t * buff) {
             
             if (val == NULL) break;
 
-            printf("register: %s, value: %s\n", reg, val);
+            //printf("register: %s, value: %s\n", reg, val);
 
-            if (strcmp(reg, "rax")==0) rax = *val;
-            if (strcmp(reg, "rbx")==0) rbx = *val;
-            if (strcmp(reg, "rcx")==0) rcx = *val;
-            if (strcmp(reg, "rdx")==0) rdx = *val;
-            if (strcmp(reg, "rsi")==0) rsi = *val;
-            if (strcmp(reg, "rdi")==0) rdi = *val;
-            if (strcmp(reg, "r8")==0)  r8 = *val;
-            if (strcmp(reg, "r9")==0)  r9 = *val;
-            if (strcmp(reg, "r10")==0) r10 = *val;
-            if (strcmp(reg, "r11")==0) r11 = *val;
-            if (strcmp(reg, "r12")==0) r12 = *val;
-            if (strcmp(reg, "r13")==0) r13 = *val;
-            if (strcmp(reg, "r14")==0) r14 = *val;
-            if (strcmp(reg, "r15")==0) r15 = *val;
+            uint64_t nval = strtoull(val, NULL, 16);
+
+            if (strcmp(reg, "rax")==0) {
+                rax = nval;
+            }
+            if (strcmp(reg, "rbx")==0) rbx = nval;
+            if (strcmp(reg, "rcx")==0) rcx = nval;
+            if (strcmp(reg, "rdx")==0) rdx = nval;
+            if (strcmp(reg, "rsi")==0) rsi = nval;
+            if (strcmp(reg, "rdi")==0) rdi = nval;
+            if (strcmp(reg, "r8")==0)  r8 = nval;
+            if (strcmp(reg, "r9")==0)  r9 = nval;
+            if (strcmp(reg, "r10")==0) r10 = nval;
+            if (strcmp(reg, "r11")==0) r11 = nval;
+            if (strcmp(reg, "r12")==0) r12 = nval;
+            if (strcmp(reg, "r13")==0) r13 = nval;
+            if (strcmp(reg, "r14")==0) r14 = nval;
+            if (strcmp(reg, "r15")==0) r15 = nval;
 
         }
 
