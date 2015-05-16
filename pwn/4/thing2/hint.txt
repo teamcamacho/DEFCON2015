@@ -1,0 +1,3 @@
+We have a special guest challenge from thing2.
+AppJailLauncher.exe /key:key /port:8200 DconQuals.exe
+thing2_e89e83e6cc343256f99fbfe6f434d788.quals.shallweplayaga.me
