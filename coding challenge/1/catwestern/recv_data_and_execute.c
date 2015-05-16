@@ -35,7 +35,7 @@ int main(int argc, uint8_t *argv[])
 
     parse_inst(buff, shellcode);
 
-    uint8_t * addr = mmap(shellcode, len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
+    uint8_t * addr = mmap(NULL, len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
     if (addr == MAP_FAILED)
     {
         printf("mmap fuck up. \n");
