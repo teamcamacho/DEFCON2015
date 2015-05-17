@@ -32,13 +32,44 @@ uint64_t r12;
 uint64_t r13;
 uint64_t r14;
 uint64_t r15;
+char crax[10];
+char crbx[10];
+char crcx[10];
+char crdx[10];
+char crsi[10];
+char crdi[10];
+char cr8[10];
+char cr9[10];
+char cr10[10];
+char cr11[10];
+char cr12[10];
+char cr13[10];
+char cr14[10];
+char cr15[10];
 
 int main(int argc, uint8_t *argv[])
 {
     int len, sock;
     uint8_t buff[MAXRCVLEN + 1];
-    uint8_t shellcode[256];
+    uint8_t shellcode[1024];
     char * response[1024];
+
+    /*
+48 B8 11 11 11 11 11 11 11 11
+48 BB 22 22 22 22 22 22 22 22
+48 B9 33 33 33 33 33 33 33 33 
+48 BA 11 11 11 11 11 11 11 11
+48 BE 22 22 22 22 22 22 22 22
+48 BF 33 33 33 33 33 33 33 33 
+49 B8 11 11 11 11 11 11 11 11 
+49 B9 22 22 22 22 22 22 22 22 
+49 BA 33 33 33 33 33 33 33 33 
+49 BB 11 11 11 11 11 11 11 11 
+49 BC 22 22 22 22 22 22 22 22
+49 BD 33 33 33 33 33 33 33 33 
+49 BE 11 11 11 11 11 11 11 11 
+49 BF 22 22 22 22 22 22 22 22
+    */
 
     sock = _connect();
 
@@ -69,7 +100,7 @@ int main(int argc, uint8_t *argv[])
 
     parse_inst(buff, shellcode);
 
-    uint8_t * addr = mmap(NULL, len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
+    uint8_t * addr = mmap(NULL, len+200, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
     if (addr == MAP_FAILED)
     {
         printf("mmap fuck up. \n");
@@ -155,25 +186,80 @@ void parse_regs(uint8_t * buff) {
             if (val == NULL) break;
 
             //printf("register: %s, value: %s\n", reg, val);
-
+/*
+48 B8 11 11 11 11 11 11 11 11
+48 BB 22 22 22 22 22 22 22 22
+48 B9 33 33 33 33 33 33 33 33 
+48 BA 11 11 11 11 11 11 11 11
+48 BE 22 22 22 22 22 22 22 22
+48 BF 33 33 33 33 33 33 33 33 
+49 B8 11 11 11 11 11 11 11 11 
+49 B9 22 22 22 22 22 22 22 22 
+49 BA 33 33 33 33 33 33 33 33 
+49 BB 11 11 11 11 11 11 11 11 
+49 BC 22 22 22 22 22 22 22 22
+49 BD 33 33 33 33 33 33 33 33 
+49 BE 11 11 11 11 11 11 11 11 
+49 BF 22 22 22 22 22 22 22 22
+    */
             uint64_t nval = strtoull(val, NULL, 16);
 
             if (strcmp(reg, "rax")==0) {
                 rax = nval;
+                sprintf(crax,"48b8%llx",nval);
             }
-            if (strcmp(reg, "rbx")==0) rbx = nval;
-            if (strcmp(reg, "rcx")==0) rcx = nval;
-            if (strcmp(reg, "rdx")==0) rdx = nval;
-            if (strcmp(reg, "rsi")==0) rsi = nval;
-            if (strcmp(reg, "rdi")==0) rdi = nval;
-            if (strcmp(reg, "r8")==0)  r8 = nval;
-            if (strcmp(reg, "r9")==0)  r9 = nval;
-            if (strcmp(reg, "r10")==0) r10 = nval;
-            if (strcmp(reg, "r11")==0) r11 = nval;
-            if (strcmp(reg, "r12")==0) r12 = nval;
-            if (strcmp(reg, "r13")==0) r13 = nval;
-            if (strcmp(reg, "r14")==0) r14 = nval;
-            if (strcmp(reg, "r15")==0) r15 = nval;
+            if (strcmp(reg, "rbx")==0){
+                rbx = nval;
+                sprintf(crbx,"48bb%llx",nval);
+            }
+            if (strcmp(reg, "rcx")==0){
+                rcx = nval;
+                sprintf(crcx,"48b9%llx",nval);
+            }
+            if (strcmp(reg, "rdx")==0){
+                rdx = nval;
+                sprintf(crdx,"48ba%llx",nval);
+            }
+            if (strcmp(reg, "rsi")==0) {
+                rsi = nval;
+                sprintf(crsi,"48be%llx",nval);
+            }
+            if (strcmp(reg, "rdi")==0) {
+                rdi = nval;
+                sprintf(crdi,"48bf%llx",nval);
+            }
+            if (strcmp(reg, "r8")==0)  {
+                r8 = nval;
+                sprintf(cr8,"49b8%llx",nval);
+            }
+            if (strcmp(reg, "r9")==0)  {
+                r9 = nval;
+                sprintf(cr9,"49b9%llx",nval);
+            }
+            if (strcmp(reg, "r10")==0) {
+                r10 = nval;
+                sprintf(cr10,"49ba%llx",nval);
+            }
+            if (strcmp(reg, "r11")==0) {
+                r11 = nval;
+                sprintf(cr11,"49bb%llx",nval);
+            }
+            if (strcmp(reg, "r12")==0) {
+                r12 = nval;
+                sprintf(cr12,"49bc%llx",nval);
+            }
+            if (strcmp(reg, "r13")==0) {
+                r13 = nval;
+                sprintf(cr13,"49bd%llx",nval);
+            }
+            if (strcmp(reg, "r14")==0) {
+                r14 = nval;
+                sprintf(cr14,"49be%llx",nval);
+            }
+            if (strcmp(reg, "r15")==0) {
+                r15 = nval;
+                sprintf(cr15,"49bf%llx",nval);
+            }
 
         }
 
