@@ -1,0 +1,232 @@
+Raw Gadgets
+===========
+           
+0x00000aab:                             5dc3 | pop rbp ; ret
+0x00000aac:                               c3 | ret
+0x00000ab9:                           5dffe0 | pop rbp ; jmp rax
+0x00000aba:                             ffe0 | jmp rax
+0x00000ad7:                   f8034889c248c1 | clc ; add ecx, dword ptr [rax+0xffffff89] ; ret 0xc148
+0x00000ad8:                     034889c248c1 | add ecx, dword ptr [rax+0xffffff89] ; ret 0xc148
+0x00000adb:                           c248c1 | ret 0xc148
+0x00000af3:               d274f25d4889c6ffe2 | sal byte ptr [rdx+rsi*8+0x5d], cl ; mov rsi, rax ; jmp rdx
+0x00000af6:                     5d4889c6ffe2 | pop rbp ; mov rsi, rax ; jmp rdx
+0x00000af7:                       4889c6ffe2 | mov rsi, rax ; jmp rdx
+0x00000af8:                         89c6ffe2 | mov esi, eax ; jmp rdx
+0x00000afa:                             ffe2 | jmp rdx
+0x00000b2a:                 057015200001f3c3 | add eax, 0x201570 ; add ebx, esi ; ret
+0x00000b2c:                     15200001f3c3 | adc eax, 0xf3010020 ; ret
+0x00000b2d:                       200001f3c3 | and byte ptr [rax], al ; add ebx, esi ; ret
+0x00000b2f:                           01f3c3 | add ebx, esi ; ret
+0x00000b57:         488d3d821220004889e5ffd0 | lea rdi, qword ptr [rip+0x201282] ; mov rbp, rsp ; call rax
+0x00000b58:           8d3d821220004889e5ffd0 | lea edi, dword ptr [rip+0x201282] ; mov rbp, rsp ; call rax
+0x00000b59:             3d821220004889e5ffd0 | cmp eax, 0x201282 ; mov rbp, rsp ; call rax
+0x00000b5c:                   20004889e5ffd0 | and byte ptr [rax], al ; mov rbp, rsp ; call rax
+0x00000b5e:                       4889e5ffd0 | mov rbp, rsp ; call rax
+0x00000b5f:                         89e5ffd0 | mov ebp, esp ; call rax
+0x00000b61:                             ffd0 | call rax
+0x00000bf2:                       415d415ec3 | pop r13 ; pop r14 ; ret
+0x00000bf3:                         5d415ec3 | pop rbp ; pop r14 ; ret
+0x00000bf4:                           415ec3 | pop r14 ; ret
+0x00000bf5:                             5ec3 | pop rsi ; ret
+0x00000c41:                       4883c408c3 | add rsp, 0x8 ; ret
+0x00000c42:                         83c408c3 | add esp, 0x8 ; ret
+0x00000eb0:                         415f5dc3 | pop r15 ; pop rbp ; ret
+0x00000eb1:                           5f5dc3 | pop rdi ; pop rbp ; ret
+0x00000f03:             4c89f64489ff41ff14dc | mov rsi, r14 ; mov edi, r15d ; call qword ptr [r12+rbx*8]
+0x00000f04:               89f64489ff41ff14dc | mov esi, esi ; mov edi, r15d ; call qword ptr [r12+rbx*8]
+0x00000f06:                   4489ff41ff14dc | mov edi, r15d ; call qword ptr [r12+rbx*8]
+0x00000f07:                     89ff41ff14dc | mov edi, edi ; call qword ptr [r12+rbx*8]
+0x00000f09:                         41ff14dc | call qword ptr [r12+rbx*8]
+0x00000f20:                       415e415fc3 | pop r14 ; pop r15 ; ret
+0x00000f21:                         5e415fc3 | pop rsi ; pop r15 ; ret
+0x00000f22:                           415fc3 | pop r15 ; ret
+0x00000f23:                             5fc3 | pop rdi ; ret
+0x00000f2d:                       000000f3c3 | add byte ptr [rax], al ; add bl, dh ; ret
+0x00000f2f:                           00f3c3 | add bl, dh ; ret
+
+[+] Raw Gadgets : 42
+                    
+Classified Gadgets
+==================
+                  
+# No Operation (2 gadgets)
+----------------------------------------------------------------------
+      Address       | Operation  | Clobbered Registers | Instructions 
+----------------------------------------------------------------------
+ 0x0000000000000aba | nop <- nop | {}                  | jmp rax 
+ 0x0000000000000afa | nop <- nop | {}                  | jmp rdx 
+                                                                      
+# Move Register (14 gadgets)
+----------------------------------------------------------------------------------------------------------------------
+      Address       |  Operation  | Clobbered Registers |                        Instructions                         
+----------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000af3 | rsi <- rax  | {rflags}            | sal byte ptr [rdx+rsi*8+0x5d], cl ; mov rsi, rax ; jmp rdx 
+ 0x0000000000000af6 | rsi <- rax  | {rsp; rbp}          | pop rbp ; mov rsi, rax ; jmp rdx 
+ 0x0000000000000af7 | rsi <- rax  | {}                  | mov rsi, rax ; jmp rdx 
+ 0x0000000000000af8 | esi <- eax  | {rsi}               | mov esi, eax ; jmp rdx 
+ 0x0000000000000b57 | rbp <- rsp  | {rsp; rdi}          | lea rdi, qword ptr [rip+0x201282] ; mov rbp, rsp ; call rax 
+ 0x0000000000000b58 | rbp <- rsp  | {rsp; rdi}          | lea edi, dword ptr [rip+0x201282] ; mov rbp, rsp ; call rax 
+ 0x0000000000000b59 | rbp <- rsp  | {rsp; rflags}       | cmp eax, 0x201282 ; mov rbp, rsp ; call rax 
+ 0x0000000000000b5c | rbp <- rsp  | {rsp}               | and byte ptr [rax], al ; mov rbp, rsp ; call rax 
+ 0x0000000000000b5e | rbp <- rsp  | {rsp}               | mov rbp, rsp ; call rax 
+ 0x0000000000000b5f | ebp <- esp  | {rbp; rsp}          | mov ebp, esp ; call rax 
+ 0x0000000000000f03 | edi <- r15d | {rsi; rsp; rdi}     | mov rsi, r14 ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f03 | rsi <- r14  | {rsp; rdi}          | mov rsi, r14 ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f04 | edi <- r15d | {rsi; rsp; rdi}     | mov esi, esi ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f06 | edi <- r15d | {rdi; rsp}          | mov edi, r15d ; call qword ptr [r12+rbx*8] 
+                                                                                                                      
+# Load Constant (4 gadgets)
+-------------------------------------------------------------------------------------------------------------------
+      Address       | Operation  | Clobbered Registers |                       Instructions                        
+-------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000f04 | esi <- 0x0 | {rsi; rsp; rdi}     | mov esi, esi ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f04 | rsi <- 0x0 | {rsp; rdi}          | mov esi, esi ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f07 | edi <- 0x0 | {rdi; rsp}          | mov edi, edi ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f07 | rdi <- 0x0 | {rsp}               | mov edi, edi ; call qword ptr [r12+rbx*8] 
+                                                                                                                   
+# Arithmetic (5 gadgets)
+-----------------------------------------------------------------------------------------------------------
+      Address       |    Operation     | Clobbered Registers |                Instructions                 
+-----------------------------------------------------------------------------------------------------------
+ 0x0000000000000b2a | ebx <- ebx + esi | {rax; rbx; rsp}     | add eax, 0x201570 ; add ebx, esi ; ret 
+ 0x0000000000000b2d | ebx <- ebx + esi | {rbx; rsp}          | and byte ptr [rax], al ; add ebx, esi ; ret 
+ 0x0000000000000b2f | ebx <- ebx + esi | {rbx; rsp}          | add ebx, esi ; ret 
+ 0x0000000000000f2d |  bl <- bl + dh   | {rbx; rsp}          | add byte ptr [rax], al ; add bl, dh ; ret 
+ 0x0000000000000f2f |  bl <- bl + dh   | {rbx; rsp}          | add bl, dh ; ret 
+                                                                                                           
+# Load Memory (19 gadgets)
+-----------------------------------------------------------------------------------------------------
+      Address       |       Operation       | Clobbered Registers |           Instructions           
+-----------------------------------------------------------------------------------------------------
+ 0x0000000000000aab | rbp <- mem[rsp]       | {rsp}               | pop rbp ; ret 
+ 0x0000000000000ab9 | rbp <- mem[rsp]       | {rsp}               | pop rbp ; jmp rax 
+ 0x0000000000000af6 | rbp <- mem[rsp]       | {rsi; rsp}          | pop rbp ; mov rsi, rax ; jmp rdx 
+ 0x0000000000000bf2 | r13 <- mem[rsp]       | {r14; rsp}          | pop r13 ; pop r14 ; ret 
+ 0x0000000000000bf2 | r14 <- mem[rsp + 0x8] | {r13; rsp}          | pop r13 ; pop r14 ; ret 
+ 0x0000000000000bf3 | r14 <- mem[rsp + 0x8] | {rsp; rbp}          | pop rbp ; pop r14 ; ret 
+ 0x0000000000000bf3 | rbp <- mem[rsp]       | {r14; rsp}          | pop rbp ; pop r14 ; ret 
+ 0x0000000000000bf4 | r14 <- mem[rsp]       | {rsp}               | pop r14 ; ret 
+ 0x0000000000000bf5 | rsi <- mem[rsp]       | {rsp}               | pop rsi ; ret 
+ 0x0000000000000eb0 | r15 <- mem[rsp]       | {rsp; rbp}          | pop r15 ; pop rbp ; ret 
+ 0x0000000000000eb0 | rbp <- mem[rsp + 0x8] | {r15; rsp}          | pop r15 ; pop rbp ; ret 
+ 0x0000000000000eb1 | rbp <- mem[rsp + 0x8] | {rsp; rdi}          | pop rdi ; pop rbp ; ret 
+ 0x0000000000000eb1 | rdi <- mem[rsp]       | {rsp; rbp}          | pop rdi ; pop rbp ; ret 
+ 0x0000000000000f20 | r14 <- mem[rsp]       | {r15; rsp}          | pop r14 ; pop r15 ; ret 
+ 0x0000000000000f20 | r15 <- mem[rsp + 0x8] | {r14; rsp}          | pop r14 ; pop r15 ; ret 
+ 0x0000000000000f21 | rsi <- mem[rsp]       | {r15; rsp}          | pop rsi ; pop r15 ; ret 
+ 0x0000000000000f21 | r15 <- mem[rsp + 0x8] | {rsi; rsp}          | pop rsi ; pop r15 ; ret 
+ 0x0000000000000f22 | r15 <- mem[rsp]       | {rsp}               | pop r15 ; ret 
+ 0x0000000000000f23 | rdi <- mem[rsp]       | {rsp}               | pop rdi ; ret 
+                                                                                                     
+# Arithmetic Load (2 gadgets)
+------------------------------------------------------------------------------------------------------------------------------------------------
+      Address       |                 Operation                  | Clobbered Registers |                      Instructions                      
+------------------------------------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000ad7 | ecx <- ecx + mem[rax + 0xffffffffffffff89] | {rcx; rsp; rflags}  | clc ; add ecx, dword ptr [rax+0xffffff89] ; ret 0xc148 
+ 0x0000000000000ad8 | ecx <- ecx + mem[rax + 0xffffffffffffff89] | {rcx; rsp}          | add ecx, dword ptr [rax+0xffffff89] ; ret 0xc148 
+                                                                                                                                                
+# Arithmetic Store (3 gadgets)
+-------------------------------------------------------------------------------------------------------------------------
+      Address       |         Operation         | Clobbered Registers |                   Instructions                   
+-------------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000b2d | mem[rax] <- mem[rax] & al | {rbx; rsp}          | and byte ptr [rax], al ; add ebx, esi ; ret 
+ 0x0000000000000b5c | mem[rax] <- mem[rax] & al | {rbp; rsp}          | and byte ptr [rax], al ; mov rbp, rsp ; call rax 
+ 0x0000000000000f2d | mem[rax] <- mem[rax] + al | {rbx; rsp}          | add byte ptr [rax], al ; add bl, dh ; ret 
+                                                                                                                         
+[+] Classified Gadgets : 49
+                           
+Verified Gadgets
+================
+                
+# No Operation (1 gadget)
+----------------------------------------------------------------------
+      Address       | Operation  | Clobbered Registers | Instructions 
+----------------------------------------------------------------------
+ 0x0000000000000aba | nop <- nop | {}                  | jmp rax 
+                                                                      
+# Move Register (11 gadgets)
+----------------------------------------------------------------------------------------------------------------------
+      Address       |  Operation  | Clobbered Registers |                        Instructions                         
+----------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000af3 | rsi <- rax  | {rflags}            | sal byte ptr [rdx+rsi*8+0x5d], cl ; mov rsi, rax ; jmp rdx 
+ 0x0000000000000af6 | rsi <- rax  | {rsp; rbp}          | pop rbp ; mov rsi, rax ; jmp rdx 
+ 0x0000000000000af7 | rsi <- rax  | {}                  | mov rsi, rax ; jmp rdx 
+ 0x0000000000000af8 | esi <- eax  | {rsi}               | mov esi, eax ; jmp rdx 
+ 0x0000000000000b58 | rbp <- rsp  | {rsp; rdi}          | lea edi, dword ptr [rip+0x201282] ; mov rbp, rsp ; call rax 
+ 0x0000000000000b59 | rbp <- rsp  | {rsp; rflags}       | cmp eax, 0x201282 ; mov rbp, rsp ; call rax 
+ 0x0000000000000b5e | rbp <- rsp  | {rsp}               | mov rbp, rsp ; call rax 
+ 0x0000000000000b5f | ebp <- esp  | {rbp; rsp}          | mov ebp, esp ; call rax 
+ 0x0000000000000f03 | edi <- r15d | {rsi; rsp; rdi}     | mov rsi, r14 ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f03 | rsi <- r14  | {rsp; rdi}          | mov rsi, r14 ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f06 | edi <- r15d | {rdi; rsp}          | mov edi, r15d ; call qword ptr [r12+rbx*8] 
+                                                                                                                      
+# Load Constant (4 gadgets)
+-------------------------------------------------------------------------------------------------------------------
+      Address       | Operation  | Clobbered Registers |                       Instructions                        
+-------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000f04 | esi <- 0x0 | {rsi; rsp; rdi}     | mov esi, esi ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f04 | rsi <- 0x0 | {rsp; rdi}          | mov esi, esi ; mov edi, r15d ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f07 | edi <- 0x0 | {rdi; rsp}          | mov edi, edi ; call qword ptr [r12+rbx*8] 
+ 0x0000000000000f07 | rdi <- 0x0 | {rsp}               | mov edi, edi ; call qword ptr [r12+rbx*8] 
+                                                                                                                   
+# Arithmetic (3 gadgets)
+------------------------------------------------------------------------------------------------------
+      Address       |    Operation     | Clobbered Registers |              Instructions              
+------------------------------------------------------------------------------------------------------
+ 0x0000000000000b2a | ebx <- ebx + esi | {rax; rbx; rsp}     | add eax, 0x201570 ; add ebx, esi ; ret 
+ 0x0000000000000b2f | ebx <- ebx + esi | {rbx; rsp}          | add ebx, esi ; ret 
+ 0x0000000000000f2f |  bl <- bl + dh   | {rbx; rsp}          | add bl, dh ; ret 
+                                                                                                      
+# Load Memory (18 gadgets)
+-----------------------------------------------------------------------------------------------------
+      Address       |       Operation       | Clobbered Registers |           Instructions           
+-----------------------------------------------------------------------------------------------------
+ 0x0000000000000aab | rbp <- mem[rsp]       | {rsp}               | pop rbp ; ret 
+ 0x0000000000000af6 | rbp <- mem[rsp]       | {rsi; rsp}          | pop rbp ; mov rsi, rax ; jmp rdx 
+ 0x0000000000000bf2 | r13 <- mem[rsp]       | {r14; rsp}          | pop r13 ; pop r14 ; ret 
+ 0x0000000000000bf2 | r14 <- mem[rsp + 0x8] | {r13; rsp}          | pop r13 ; pop r14 ; ret 
+ 0x0000000000000bf3 | r14 <- mem[rsp + 0x8] | {rsp; rbp}          | pop rbp ; pop r14 ; ret 
+ 0x0000000000000bf3 | rbp <- mem[rsp]       | {r14; rsp}          | pop rbp ; pop r14 ; ret 
+ 0x0000000000000bf4 | r14 <- mem[rsp]       | {rsp}               | pop r14 ; ret 
+ 0x0000000000000bf5 | rsi <- mem[rsp]       | {rsp}               | pop rsi ; ret 
+ 0x0000000000000eb0 | r15 <- mem[rsp]       | {rsp; rbp}          | pop r15 ; pop rbp ; ret 
+ 0x0000000000000eb0 | rbp <- mem[rsp + 0x8] | {r15; rsp}          | pop r15 ; pop rbp ; ret 
+ 0x0000000000000eb1 | rbp <- mem[rsp + 0x8] | {rsp; rdi}          | pop rdi ; pop rbp ; ret 
+ 0x0000000000000eb1 | rdi <- mem[rsp]       | {rsp; rbp}          | pop rdi ; pop rbp ; ret 
+ 0x0000000000000f20 | r14 <- mem[rsp]       | {r15; rsp}          | pop r14 ; pop r15 ; ret 
+ 0x0000000000000f20 | r15 <- mem[rsp + 0x8] | {r14; rsp}          | pop r14 ; pop r15 ; ret 
+ 0x0000000000000f21 | rsi <- mem[rsp]       | {r15; rsp}          | pop rsi ; pop r15 ; ret 
+ 0x0000000000000f21 | r15 <- mem[rsp + 0x8] | {rsi; rsp}          | pop rsi ; pop r15 ; ret 
+ 0x0000000000000f22 | r15 <- mem[rsp]       | {rsp}               | pop r15 ; ret 
+ 0x0000000000000f23 | rdi <- mem[rsp]       | {rsp}               | pop rdi ; ret 
+                                                                                                     
+# Arithmetic Load (2 gadgets)
+------------------------------------------------------------------------------------------------------------------------------------------------
+      Address       |                 Operation                  | Clobbered Registers |                      Instructions                      
+------------------------------------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000ad7 | ecx <- ecx + mem[rax + 0xffffffffffffff89] | {rcx; rsp; rflags}  | clc ; add ecx, dword ptr [rax+0xffffff89] ; ret 0xc148 
+ 0x0000000000000ad8 | ecx <- ecx + mem[rax + 0xffffffffffffff89] | {rcx; rsp}          | add ecx, dword ptr [rax+0xffffff89] ; ret 0xc148 
+                                                                                                                                                
+# Arithmetic Store (3 gadgets)
+-------------------------------------------------------------------------------------------------------------------------
+      Address       |         Operation         | Clobbered Registers |                   Instructions                   
+-------------------------------------------------------------------------------------------------------------------------
+ 0x0000000000000b2d | mem[rax] <- mem[rax] & al | {rbx; rsp}          | and byte ptr [rax], al ; add ebx, esi ; ret 
+ 0x0000000000000b5c | mem[rax] <- mem[rax] & al | {rbp; rsp}          | and byte ptr [rax], al ; mov rbp, rsp ; call rax 
+ 0x0000000000000f2d | mem[rax] <- mem[rax] + al | {rbx; rsp}          | add byte ptr [rax], al ; add bl, dh ; ret 
+                                                                                                                         
+[+] Verified Gadgets : 42
+                         
+Non-verified Gadgets
+====================
+                    
+0x00000aac:                               c3 | ret
+0x00000adb:                           c248c1 | ret 0xc148
+0x00000b2c:                     15200001f3c3 | adc eax, 0xf3010020 ; ret
+0x00000b61:                             ffd0 | call rax
+0x00000c41:                       4883c408c3 | add rsp, 0x8 ; ret
+0x00000c42:                         83c408c3 | add esp, 0x8 ; ret
+0x00000f09:                         41ff14dc | call qword ptr [r12+rbx*8]
+
+[+] Non-verified Gadgets : 7
+                            

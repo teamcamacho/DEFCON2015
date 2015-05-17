@@ -1,0 +1,1 @@
+./recv_data_and_execute_w_register && echo "asm: " && objdump -b binary -m i386:x86-64 -M intel -D out.dat && ls -lart

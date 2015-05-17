@@ -15,7 +15,7 @@
 int _connect(void);
 int read_data(int, uint8_t *);
 void parse_regs(uint8_t *, uint8_t *, char *);
-void parse_inst(uint8_t *, uint8_t *);
+int parse_inst(uint8_t *, uint8_t *);
 void registers_to_str(char *);
 
 <<<<<<< HEAD
@@ -56,12 +56,17 @@ int main(int argc, uint8_t *argv[])
 =======
 int main(int argc, uint8_t *argv[])
 {
-    int len, sock;
+    int inst_len, len, sock;
     uint8_t buff1[MAXRCVLEN + 1];
     uint8_t buff2[MAXRCVLEN + 1];
+<<<<<<< HEAD
     uint8_t shellcode[256];
 >>>>>>> 8d24da5c572eb4ef7c3e0dbd9d624ef3edc34785
     char * response[1024];
+=======
+    uint8_t shellcode[256] = {0};
+    char response[1024] = {0};
+>>>>>>> e86a49429ead531a0237020ea387c5bd9d3a4686
 
     /*
 48 B8 11 11 11 11 11 11 11 11
@@ -119,9 +124,9 @@ int main(int argc, uint8_t *argv[])
     len = read_data(sock, buff2);
     printf("%s", buff2, len);
 
-    parse_inst(buff2, shellcode);
+    inst_len = parse_inst(buff2, shellcode);
 
-    uint8_t * exec_buff = mmap(shellcode, len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
+    uint8_t * exec_buff = mmap(shellcode, inst_len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
     if (exec_buff == MAP_FAILED)
 >>>>>>> 8d24da5c572eb4ef7c3e0dbd9d624ef3edc34785
     {
@@ -137,7 +142,7 @@ int main(int argc, uint8_t *argv[])
 
     parse_regs(buff1, exec_buff, response);
 
-    printf("\n\nSending solution:\n%s\n", response);
+    //printf("\n\nSending solution:\n%s\n", response);
 
     /*
     ****Initial Register State****
@@ -176,7 +181,7 @@ void registers_to_str(char * response) {
 }
 */
 
-void parse_inst(uint8_t * buff, uint8_t * shellcode) {
+int parse_inst(uint8_t * buff, uint8_t * shellcode) {
     uint8_t * str;
     uint8_t * prep;
     uint8_t * inst;
@@ -197,14 +202,32 @@ void parse_inst(uint8_t * buff, uint8_t * shellcode) {
     //printf("len: %d\n", len);
     //printf("inst: %s\n", inst);
 
+    char * rev_shellcode[256];
+
     int i;
     uint8_t x;
     for(i=0; i < len; i++) {
         x = inst[i];
         printf("%02X ", x & 0xff);
         shellcode[i] = inst[i];
+        rev_shellcode[i] = inst[len-(1+i)];
     }
     printf("\n");
+    
+    FILE * fd = fopen("out.dat", "w");
+    for(i=0;i < len; i++) {
+        fprintf(fd, "%c", shellcode[i]);
+    }
+    close(fd);
+
+    fd = fopen("out_rev.dat", "w");
+    for(i=0;i < len; i++) {
+        fprintf(fd, "%c", rev_shellcode[i]);
+    }
+    close(fd);
+
+
+    return len;
 }
 
 void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
@@ -377,9 +400,9 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
             "movq %%rax, %14  \n"
             "movq %%rbx, %15  \n"
             "movq %%rcx, %16  \n"
-            "movq %%rdx, %16  \n"
+            "movq %%rdx, %17  \n"
             "movq %%rsi, %18  \n"
-            "movq %%rdi, %19  \n"
+            "movq %%rdi, %19 \n"
             "movq %%r8, %20  \n"
             "movq %%r9, %21  \n"
             "movq %%r10, %22  \n"
@@ -392,14 +415,21 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
             "_end_buf:       \n"
             : "=r" (rax), "=r" (rbx), "=r" (rcx), "=r" (rdx), "=r" (rsi), "=r" (rdi), "=r" (r8), "=r" (r9), "=r" (r10), "=r" (r11), "=r" (r12), "=r" (r13), "=r" (r14), "=r" (r15)
             : "r" (rax), "r" (rbx), "r" (rcx), "r" (rdx), "r" (rsi), "r" (rdi), "r" (r8), "r" (r9), "r" (r10), "r" (r11), "r" (r12), "r" (r13), "r" (r14), "r" (r15), "m" (exec_buff)
-            //: "%rax"
+            //: "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" //clobber
         );
 
+        sprintf(response, 
+            "rax=0x%llx\nrbx=0x%llx\nrcx=0x%llx\nrdx=0x%llx\nrsi=0x%llx\nrdi=0x%llx\nr8=0x%llx\nr9=0x%llx\nr10=0x%llx\nr11=0x%llx\nr12=0x%llx\nr13=0x%llx\nr14=0x%llx\nr15=0x%llx\n",
+            rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
+        printf("\n=====\nregisters (exec):\n%s\n=====\n", response);
+
+        /*
         sprintf(response, 
             "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n",
             rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
         printf("\n=====\nregisters (exec):\n%s\n=====\n", response);
-        /*
+        */
+        /* Invalid Format error if we add header and footer:
         sprintf(response, 
             "****Initial Register State****\n" \
             "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n" \

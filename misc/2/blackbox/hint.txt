@@ -1,0 +1,3 @@
+blackbox
+
+Open the box at blackbox_ced7f267475a0299446fa86c26d77161.quals.shallweplayaga.me:18324
