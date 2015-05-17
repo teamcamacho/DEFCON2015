@@ -43,7 +43,11 @@ def main():
     s.send(sdata + "\n")
 
     print s.recv(1024)
+    print s.recv(1024)
+    print 'sending ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    s.send('ABCDEFGHIJKLMNOPQRSTUVWXYZ\n')
 
+    print s.recv(1024)
     s.close()
 
 def generate_rot(offset):
