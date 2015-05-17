@@ -139,6 +139,25 @@ int main(int argc, uint8_t *argv[])
 
     printf("\n\nSending solution:\n%s\n", response);
 
+    /*
+    ****Initial Register State****
+    rax=0x2404dbf25a0af700
+    rbx=0x68c05efe54a3c445
+    rcx=0x76de93faba2f8502
+    rdx=0x9dfc9b4e8be86957
+    rsi=0x99d1bf79721f1b5f
+    rdi=0xd6eee8551b0bf0d2
+    r8=0xe7cb59ab3e4bdd9c
+    r9=0xd3441b0b62187ecb
+    r10=0x8f5026659569b7c0
+    r11=0x842348707b626fc
+    r12=0x268871d483f109fc
+    r13=0x375ae2f6b95c4969
+    r14=0xbceb39501e6b9667
+    r15=0x50d1360c44d70ecd
+    ****Send Solution In The Same Format****
+    */
+
     write(sock, response, strlen(response));
 
     len = read_data(sock, buff1);
@@ -352,32 +371,42 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
             "movq %10, %%r12  \n"
             "movq %11, %%r13  \n"
             "movq %12, %%r14  \n"
+            "movq %13, %%r15  \n"
             "jmp _end_buf     \n"
             "_next:           \n"
-            "movq %%rax, %13  \n"
-            "movq %%rbx, %14  \n"
-            "movq %%rcx, %15  \n"
+            "movq %%rax, %14  \n"
+            "movq %%rbx, %15  \n"
+            "movq %%rcx, %16  \n"
             "movq %%rdx, %16  \n"
-            "movq %%rsi, %17  \n"
-            "movq %%rdi, %18  \n"
-            "movq %%r8, %19  \n"
-            "movq %%r9, %20  \n"
-            "movq %%r10, %21  \n"
-            "movq %%r11, %22  \n"
-            "movq %%r12, %23  \n"
-            "movq %%r13, %24  \n"
-            "movq %%r14, %25  \n"
-            "jmp %26         \n" // exec code
+            "movq %%rsi, %18  \n"
+            "movq %%rdi, %19  \n"
+            "movq %%r8, %20  \n"
+            "movq %%r9, %21  \n"
+            "movq %%r10, %22  \n"
+            "movq %%r11, %23  \n"
+            "movq %%r12, %24  \n"
+            "movq %%r13, %25  \n"
+            "movq %%r14, %26  \n"
+            "movq %%r15, %27  \n"
+            "jmp %28         \n" // exec code
             "_end_buf:       \n"
-            : "=r" (rax), "=r" (rbx), "=r" (rcx), "=r" (rdx), "=r" (rsi), "=r" (rdi), "=r" (r8), "=r" (r9), "=r" (r10), "=r" (r11), "=r" (r12), "=r" (r13), "=r" (r14)
-            : "r" (rax), "r" (rbx), "r" (rcx), "r" (rdx), "r" (rsi), "r" (rdi), "r" (r8), "r" (r9), "r" (r10), "r" (r11), "r" (r12), "r" (r13), "r" (r14), "r" (exec_buff)
+            : "=r" (rax), "=r" (rbx), "=r" (rcx), "=r" (rdx), "=r" (rsi), "=r" (rdi), "=r" (r8), "=r" (r9), "=r" (r10), "=r" (r11), "=r" (r12), "=r" (r13), "=r" (r14), "=r" (r15)
+            : "r" (rax), "r" (rbx), "r" (rcx), "r" (rdx), "r" (rsi), "r" (rdi), "r" (r8), "r" (r9), "r" (r10), "r" (r11), "r" (r12), "r" (r13), "r" (r14), "r" (r15), "m" (exec_buff)
             //: "%rax"
         );
 
         sprintf(response, 
-            "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n", 
+            "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n",
             rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
         printf("\n=====\nregisters (exec):\n%s\n=====\n", response);
+        /*
+        sprintf(response, 
+            "****Initial Register State****\n" \
+            "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n" \
+            "****Send Solution In The Same Format****\n", 
+            rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
+        printf("\n=====\nregisters (exec):\n%s\n=====\n", response);
+        */
 
         free(tofree);
     }
