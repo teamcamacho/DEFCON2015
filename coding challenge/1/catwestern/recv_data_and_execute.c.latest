@@ -18,101 +18,16 @@ void parse_regs(uint8_t *, uint8_t *, char *);
 void parse_inst(uint8_t *, uint8_t *);
 void registers_to_str(char *);
 
-<<<<<<< HEAD
-uint64_t rax;
-uint64_t rbx;
-uint64_t rcx;
-uint64_t rdx;
-uint64_t rsi;
-uint64_t rdi;
-uint64_t r8;
-uint64_t r9;
-uint64_t r10;
-uint64_t r11;
-uint64_t r12;
-uint64_t r13;
-uint64_t r14;
-uint64_t r15;
-char crax[10];
-char crbx[10];
-char crcx[10];
-char crdx[10];
-char crsi[10];
-char crdi[10];
-char cr8[10];
-char cr9[10];
-char cr10[10];
-char cr11[10];
-char cr12[10];
-char cr13[10];
-char cr14[10];
-char cr15[10];
-
-int main(int argc, uint8_t *argv[])
-{
-    int len, sock;
-    uint8_t buff[MAXRCVLEN + 1];
-    uint8_t shellcode[1024];
-=======
 int main(int argc, uint8_t *argv[])
 {
     int len, sock;
     uint8_t buff1[MAXRCVLEN + 1];
     uint8_t buff2[MAXRCVLEN + 1];
     uint8_t shellcode[256];
->>>>>>> 8d24da5c572eb4ef7c3e0dbd9d624ef3edc34785
     char * response[1024];
-
-    /*
-48 B8 11 11 11 11 11 11 11 11
-48 BB 22 22 22 22 22 22 22 22
-48 B9 33 33 33 33 33 33 33 33 
-48 BA 11 11 11 11 11 11 11 11
-48 BE 22 22 22 22 22 22 22 22
-48 BF 33 33 33 33 33 33 33 33 
-49 B8 11 11 11 11 11 11 11 11 
-49 B9 22 22 22 22 22 22 22 22 
-49 BA 33 33 33 33 33 33 33 33 
-49 BB 11 11 11 11 11 11 11 11 
-49 BC 22 22 22 22 22 22 22 22
-49 BD 33 33 33 33 33 33 33 33 
-49 BE 11 11 11 11 11 11 11 11 
-49 BF 22 22 22 22 22 22 22 22
-    */
 
     sock = _connect();
 
-<<<<<<< HEAD
-    len = read_data(sock, buff);
-    printf("%s", buff, len);
-
-    register *rax asm("rax");
-    register *rbx asm("rbx");
-    register *rcx asm("rcx");
-    register *rdx asm("rdx");
-    register *rsi asm("rsi");
-    register *rdi asm("rdi");
-    register *r8 asm("r8");
-    register *r9 asm("r9");
-    register *r10 asm("r10");
-    register *r11 asm("r11");
-    register *r12 asm("r12");
-    register *r13 asm("r13");
-    register *r14 asm("r14");
-    register *r15 asm("r15");
-
-    parse_regs(buff);
-    registers_to_str(response);
-    printf("\n=====\nregisters (load):\n%s\n=====\n", response);
-
-    len = read_data(sock, buff);
-    printf("%s", buff, len);
-
-    parse_inst(buff, shellcode);
-
-    uint8_t * addr = mmap(NULL, len+200, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
-    if (addr == MAP_FAILED)
-=======
     len = read_data(sock, buff1);
     printf("%s", buff1, len);
 
@@ -123,7 +38,6 @@ int main(int argc, uint8_t *argv[])
 
     uint8_t * exec_buff = mmap(shellcode, len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
     if (exec_buff == MAP_FAILED)
->>>>>>> 8d24da5c572eb4ef7c3e0dbd9d624ef3edc34785
     {
         printf("mmap fuck up. \n");
     }
@@ -224,82 +138,9 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
             if (val == NULL) break;
 
             //printf("register: %s, value: %s\n", reg, val);
-/*
-48 B8 11 11 11 11 11 11 11 11
-48 BB 22 22 22 22 22 22 22 22
-48 B9 33 33 33 33 33 33 33 33 
-48 BA 11 11 11 11 11 11 11 11
-48 BE 22 22 22 22 22 22 22 22
-48 BF 33 33 33 33 33 33 33 33 
-49 B8 11 11 11 11 11 11 11 11 
-49 B9 22 22 22 22 22 22 22 22 
-49 BA 33 33 33 33 33 33 33 33 
-49 BB 11 11 11 11 11 11 11 11 
-49 BC 22 22 22 22 22 22 22 22
-49 BD 33 33 33 33 33 33 33 33 
-49 BE 11 11 11 11 11 11 11 11 
-49 BF 22 22 22 22 22 22 22 22
-    */
+
             uint64_t nval = strtoull(val, NULL, 16);
 
-<<<<<<< HEAD
-            if (strcmp(reg, "rax")==0) {
-                rax = nval;
-                sprintf(crax,"48b8%llx",nval);
-            }
-            if (strcmp(reg, "rbx")==0){
-                rbx = nval;
-                sprintf(crbx,"48bb%llx",nval);
-            }
-            if (strcmp(reg, "rcx")==0){
-                rcx = nval;
-                sprintf(crcx,"48b9%llx",nval);
-            }
-            if (strcmp(reg, "rdx")==0){
-                rdx = nval;
-                sprintf(crdx,"48ba%llx",nval);
-            }
-            if (strcmp(reg, "rsi")==0) {
-                rsi = nval;
-                sprintf(crsi,"48be%llx",nval);
-            }
-            if (strcmp(reg, "rdi")==0) {
-                rdi = nval;
-                sprintf(crdi,"48bf%llx",nval);
-            }
-            if (strcmp(reg, "r8")==0)  {
-                r8 = nval;
-                sprintf(cr8,"49b8%llx",nval);
-            }
-            if (strcmp(reg, "r9")==0)  {
-                r9 = nval;
-                sprintf(cr9,"49b9%llx",nval);
-            }
-            if (strcmp(reg, "r10")==0) {
-                r10 = nval;
-                sprintf(cr10,"49ba%llx",nval);
-            }
-            if (strcmp(reg, "r11")==0) {
-                r11 = nval;
-                sprintf(cr11,"49bb%llx",nval);
-            }
-            if (strcmp(reg, "r12")==0) {
-                r12 = nval;
-                sprintf(cr12,"49bc%llx",nval);
-            }
-            if (strcmp(reg, "r13")==0) {
-                r13 = nval;
-                sprintf(cr13,"49bd%llx",nval);
-            }
-            if (strcmp(reg, "r14")==0) {
-                r14 = nval;
-                sprintf(cr14,"49be%llx",nval);
-            }
-            if (strcmp(reg, "r15")==0) {
-                r15 = nval;
-                sprintf(cr15,"49bf%llx",nval);
-            }
-=======
             if (strcmp(reg, "rax")==0) rax = nval;
             if (strcmp(reg, "rbx")==0) rbx = nval;
             if (strcmp(reg, "rcx")==0) rcx = nval;
@@ -314,16 +155,14 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
             if (strcmp(reg, "r13")==0) r13 = nval;
             if (strcmp(reg, "r14")==0) r14 = nval;
             if (strcmp(reg, "r15")==0) r15 = nval;
->>>>>>> 8d24da5c572eb4ef7c3e0dbd9d624ef3edc34785
 
         }
 
-        /*
         sprintf(response, 
             "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n", 
             rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
         printf("\n=====\nregisters (load):\n%s\n=====\n", response);
-        */
+
 
         /*
         asm volatile (
@@ -339,40 +178,41 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
         
         asm volatile (
             "call _next      \n"
-            "movq %0, %%rax  \n"
-            "movq %1, %%rbx  \n"
-            "movq %2, %%rcx  \n"
-            "movq %3, %%rdx  \n"
-            "movq %4, %%rsi  \n"
-            "movq %5, %%rdi  \n"
-            "movq %6, %%r8  \n"
-            "movq %7, %%r9  \n"
-            "movq %8, %%r10  \n"
-            "movq %9, %%r11  \n"
-            "movq %10, %%r12  \n"
-            "movq %11, %%r13  \n"
-            "movq %12, %%r14  \n"
+            "movq %14, %%rax  \n"
+            "movq %15, %%rbx  \n"
+            "movq %16, %%rcx  \n"
+            "movq %17, %%rdx  \n"
+            "movq %18, %%rsi  \n"
+            "movq %19, %%rdi  \n"
+            "movq %20, %%r8   \n"
+            "movq %21, %%r9   \n"
+            "movq %22, %%r10  \n"
+            "movq %23, %%r11  \n"
+            "movq %24, %%r120 \n"
+            "movq %25, %%r131 \n"
+            "movq %26, %%r142 \n"
+            "movq %27, %%r15  \n"
             "jmp _end_buf     \n"
             "_next:           \n"
-            "movq %%rax, %13  \n"
-            "movq %%rbx, %14  \n"
-            "movq %%rcx, %15  \n"
-            "movq %%rdx, %16  \n"
-            "movq %%rsi, %17  \n"
-            "movq %%rdi, %18  \n"
-            "movq %%r8, %19  \n"
-            "movq %%r9, %20  \n"
-            "movq %%r10, %21  \n"
-            "movq %%r11, %22  \n"
-            "movq %%r12, %23  \n"
-            "movq %%r13, %24  \n"
-            "movq %%r14, %25  \n"
-            "jmp %26         \n" // exec code
+            "movq %%rax, %0  \n"
+            "movq %%rbx, %1  \n"
+            "movq %%rcx, %2  \n"
+            "movq %%rdx, %3  \n"
+            "movq %%rsi, %4  \n"
+            "movq %%rdi, %5  \n"
+            "movq %%r8, %6   \n"
+            "movq %%r9, %7   \n"
+            "movq %%r10, %8  \n"
+            "movq %%r11, %9  \n"
+            "movq %%r12, %10 \n"
+            "movq %%r13, %11 \n"
+            "movq %%r14, %12 \n"
+            "movq %%r15, %13 \n"
+            "jmp %14         \n" // exec code
             "_end_buf:       \n"
             : "=r" (rax), "=r" (rbx), "=r" (rcx), "=r" (rdx), "=r" (rsi), "=r" (rdi), "=r" (r8), "=r" (r9), "=r" (r10), "=r" (r11), "=r" (r12), "=r" (r13), "=r" (r14)
-            : "r" (rax), "r" (rbx), "r" (rcx), "r" (rdx), "r" (rsi), "r" (rdi), "r" (r8), "r" (r9), "r" (r10), "r" (r11), "r" (r12), "r" (r13), "r" (r14), "r" (exec_buff)
-            //: "%rax"
-        );
+            : "r" (rax), "r" (rbx), "r" (rcx), "r" (rdx), "r" (rsi), "r" (rdi), "r" (r8), "r" (r9), "r" (r10), "r" (r11), "r" (r12), "r" (r13), "r" (r14),"r" (exec_buff)
+            : "%rax", "%rbx", "%rcx", "%rdx", "%rsi", "%rdi", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14");
 
         sprintf(response, 
             "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n", 
