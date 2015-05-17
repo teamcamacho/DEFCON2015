@@ -8,9 +8,9 @@ import socket
 '''
 
 def query():
-	ip = socket.gethostbyname('blackbox_ced7f267475a0299446fa86c26d77161.quals.shallweplayaga.me')
+	ip = socket.gethostbyname('mathwhiz_c951d46fed68687ad93a84e702800b7a.quals.shallweplayaga.me')
 	sock = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-	sock.connect( (ip, 18324) )
+	sock.connect( (ip, 21249) )
 	print sock.recv(1024)
 	print sock.recv(1024)
 	print 'sending 1234'
@@ -20,8 +20,6 @@ def query():
 	strSplitSpace = strPass.split(' ')
 	submitted = ''
 	received = ''
-	for i in range(0:len(strSplitSpace)):
-		pass
 	sock.send('()_+\n')
 	print sock.recv(1024)
 	sock.send('abcd\n')
