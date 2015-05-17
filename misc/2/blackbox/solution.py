@@ -59,22 +59,12 @@ def solve_stage_2(rdata):
     print key
         
 
-<<<<<<< HEAD
-    print s.recv(1024)
-    print s.recv(1024)
-    print 'sending ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    s.send('ABCDEFGHIJKLMNOPQRSTUVWXYZ\n')
-
-    print s.recv(1024)
-    s.close()
-=======
     rot = string.maketrans(
         key,
         valid_chars
     )
 
     return string.translate(expected, rot)
->>>>>>> b66371a7de6f01f4505ce0f09a5696d5180e5fca
 
 def generate_stage1_key(offset):
     result = [None]*len(valid_chars)
