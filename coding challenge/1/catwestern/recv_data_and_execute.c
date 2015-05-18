@@ -15,16 +15,16 @@
 int _connect(void);
 int read_data(int, uint8_t *);
 void parse_regs(uint8_t *, uint8_t *, char *);
-void parse_inst(uint8_t *, uint8_t *);
+int parse_inst(uint8_t *, uint8_t *);
 void registers_to_str(char *);
 
 int main(int argc, uint8_t *argv[])
 {
-    int len, sock;
+    int inst_len, len, sock;
     uint8_t buff1[MAXRCVLEN + 1];
     uint8_t buff2[MAXRCVLEN + 1];
-    uint8_t shellcode[256];
-    char * response[1024];
+    uint8_t shellcode[256] = {0};
+    char response[1024] = {0};
 
     sock = _connect();
 
@@ -34,9 +34,9 @@ int main(int argc, uint8_t *argv[])
     len = read_data(sock, buff2);
     printf("%s", buff2, len);
 
-    parse_inst(buff2, shellcode);
+    inst_len = parse_inst(buff2, shellcode);
 
-    uint8_t * exec_buff = mmap(shellcode, len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
+    uint8_t * exec_buff = mmap(shellcode, inst_len, PROT_READ|PROT_EXEC |PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0); 
     if (exec_buff == MAP_FAILED)
     {
         printf("mmap fuck up. \n");
@@ -90,7 +90,7 @@ void registers_to_str(char * response) {
 }
 */
 
-void parse_inst(uint8_t * buff, uint8_t * shellcode) {
+int parse_inst(uint8_t * buff, uint8_t * shellcode) {
     uint8_t * str;
     uint8_t * prep;
     uint8_t * inst;
@@ -111,14 +111,32 @@ void parse_inst(uint8_t * buff, uint8_t * shellcode) {
     //printf("len: %d\n", len);
     //printf("inst: %s\n", inst);
 
+    char * rev_shellcode[256];
+
     int i;
     uint8_t x;
     for(i=0; i < len; i++) {
         x = inst[i];
         printf("%02X ", x & 0xff);
         shellcode[i] = inst[i];
+        rev_shellcode[i] = inst[len-(1+i)];
     }
     printf("\n");
+    
+    FILE * fd = fopen("out.dat", "w");
+    for(i=0;i < len; i++) {
+        fprintf(fd, "%c", shellcode[i]);
+    }
+    close(fd);
+
+    fd = fopen("out_rev.dat", "w");
+    for(i=0;i < len; i++) {
+        fprintf(fd, "%c", rev_shellcode[i]);
+    }
+    close(fd);
+
+
+    return len;
 }
 
 void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
@@ -217,9 +235,9 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
             "movq %%rax, %14  \n"
             "movq %%rbx, %15  \n"
             "movq %%rcx, %16  \n"
-            "movq %%rdx, %16  \n"
+            "movq %%rdx, %17  \n"
             "movq %%rsi, %18  \n"
-            "movq %%rdi, %19  \n"
+            "movq %%rdi, %19 \n"
             "movq %%r8, %20  \n"
             "movq %%r9, %21  \n"
             "movq %%r10, %22  \n"
