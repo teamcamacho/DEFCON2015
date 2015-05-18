@@ -2,18 +2,32 @@
 
 from subprocess import *
 import fcntl, os, time, re
+import socket
+
+SERVER_IP = '52.4.234.13'
+SERVER_PORT = 2606
+
+
+
 
 def main():
-    b = "./wwtw_c3722e23150e1d5abbc1c248d99d718d"
+    #b = "./wwtw_c3722e23150e1d5abbc1c248d99d718d"
+    #p = Popen(b, stdin=PIPE, stdout=PIPE)
+    #fcntl.fcntl(p.stdout.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
 
-    p = Popen(b, stdin=PIPE, stdout=PIPE)
-    fcntl.fcntl(p.stdout.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((SERVER_IP, SERVER_PORT))
 
-    solve_grid(p)
+    solve_grid(s)
 
-def solve_grid(p):
+    s.close()
 
-    data = read_input(p)
+
+def solve_grid(s):
+
+    data = s.recv(1024)
+    print data
+
     grid = parse_data(data)
 
     while True:
@@ -30,21 +44,30 @@ def solve_grid(p):
             #print ""
             #for line in grid:
             #    print line
-            p.stdin.write("%s\n" % c)
-            data = read_input(p)
+            print c
+            s.send("%s\n" % c)
+            data = s.recv(1024)
+            print data
             grid = parse_data(data) 
 
         if 'TARDIS KEY' in data: 
-            p.stdin.write("UeSlhCAGEp\n")
-            data = read_input(p)
+            print "UeSlhCAGEp"
+            s.send("UeSlhCAGEp\n")
+            data = s.recv(1024)
+            print data
 
         if 'Selection' in data: 
-            p.stdin.write("1\n")
-            data = read_input(p)
+            print "1"
+            s.send("1\n")
+            data = s.recv(1024)
+            print data
 
         if 'Selection' in data: 
-            p.stdin.write("3\n")
-            data = read_input(p)
+            print "3"
+            s.send("3\n")
+            data = s.recv(1024)
+            print data
+
             break
 
 # 51.492137

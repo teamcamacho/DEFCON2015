@@ -30,21 +30,26 @@ def solve_grid(p):
             #print ""
             #for line in grid:
             #    print line
+            print c
             p.stdin.write("%s\n" % c)
             data = read_input(p)
             grid = parse_data(data) 
 
         if 'TARDIS KEY' in data: 
+            print "UeSlhCAGEp"
             p.stdin.write("UeSlhCAGEp\n")
             data = read_input(p)
 
         if 'Selection' in data: 
+            print "1"
             p.stdin.write("1\n")
             data = read_input(p)
 
         if 'Selection' in data: 
+            print "3"
             p.stdin.write("3\n")
             data = read_input(p)
+
             break
 
 # 51.492137
@@ -73,10 +78,6 @@ def find_path(V, E, grid):
             cmds.append('w')
         else:
             break
-            V = (oV[0]+1,oV[1])
-            cmds = ['d']
-
-        #print "[%s]" % grid[V[1]][V[0]]
 
     return cmds
 
