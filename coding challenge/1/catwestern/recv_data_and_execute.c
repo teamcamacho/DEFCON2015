@@ -51,7 +51,7 @@ int main(int argc, uint8_t *argv[])
 
     parse_regs(buff1, exec_buff, response);
 
-    printf("\n\nSending solution:\n%s\n", response);
+    //printf("\n\nSending solution:\n%s\n", response);
 
     /*
     ****Initial Register State****
@@ -250,14 +250,21 @@ void parse_regs(uint8_t * buff, uint8_t * exec_buff, char * response) {
             "_end_buf:       \n"
             : "=r" (rax), "=r" (rbx), "=r" (rcx), "=r" (rdx), "=r" (rsi), "=r" (rdi), "=r" (r8), "=r" (r9), "=r" (r10), "=r" (r11), "=r" (r12), "=r" (r13), "=r" (r14), "=r" (r15)
             : "r" (rax), "r" (rbx), "r" (rcx), "r" (rdx), "r" (rsi), "r" (rdi), "r" (r8), "r" (r9), "r" (r10), "r" (r11), "r" (r12), "r" (r13), "r" (r14), "r" (r15), "m" (exec_buff)
-            //: "%rax"
+            //: "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" //clobber
         );
 
+        sprintf(response, 
+            "rax=0x%llx\nrbx=0x%llx\nrcx=0x%llx\nrdx=0x%llx\nrsi=0x%llx\nrdi=0x%llx\nr8=0x%llx\nr9=0x%llx\nr10=0x%llx\nr11=0x%llx\nr12=0x%llx\nr13=0x%llx\nr14=0x%llx\nr15=0x%llx\n",
+            rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
+        printf("\n=====\nregisters (exec):\n%s\n=====\n", response);
+
+        /*
         sprintf(response, 
             "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n",
             rax, rbx, rcx, rdx, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15);
         printf("\n=====\nregisters (exec):\n%s\n=====\n", response);
-        /*
+        */
+        /* Invalid Format error if we add header and footer:
         sprintf(response, 
             "****Initial Register State****\n" \
             "rax=0x%016llx\nrbx=0x%016llx\nrcx=0x%016llx\nrdx=0x%016llx\nrsi=0x%016llx\nrdi=0x%016llx\nr8=0x%016llx\nr9=0x%016llx\nr10=0x%016llx\nr11=0x%016llx\nr12=0x%016llx\nr13=0x%016llx\nr14=0x%016llx\nr15=0x%016llx\n" \
