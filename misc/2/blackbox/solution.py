@@ -7,6 +7,7 @@ SERVER_IP = '52.7.160.61'
 SERVER_PORT = 18324
 
 valid_chars = """ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ """
+rev_valid_chars = valid_chars[::-1]
 
 def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,7 +26,7 @@ def main():
             print "sending: ", sdata
             s.send(sdata + "\n")
         if "Another easy box:" in rdata:
-            s.send("ABABABABABABABA\n")
+            s.send("A\n")
             rdata = s.recv(1024)
             print rdata
 
@@ -38,10 +39,19 @@ def main():
             rdata = s.recv(1024)
             print rdata
 
-            s.send("ABABABABABABABA\n")
+            s.send("A\n")
             rdata = s.recv(1024)
             print rdata
-            
+
+
+            sdata = solve_stage_3(rdata)
+            print "sending: ", sdata
+            s.send(sdata + "\n")
+
+            rdata = s.recv(1024)
+            print rdata
+
+            break
         
     s.close()
 
@@ -75,11 +85,26 @@ def solve_stage_2(rdata):
 
         count += loc + count 
 
-        print "loc: ", loc, " count: ", count
-    
         decoded += valid_chars[loc % len(valid_chars)]
 
     return decoded
+
+def solve_stage_3(rdata):
+    (password, expected) = re.match(r'Password \[(.*)\]\s+Expected\s+\[(.*)\]', rdata).groups()
+    offset = rev_valid_chars.index(password)
+
+    key = generate_stage3_key(offset)
+
+    rot = string.maketrans(
+        key,
+        valid_chars
+    )
+
+    print valid_chars
+    print key
+
+    return string.translate(expected, rot)
+
 
 def generate_stage1_key(offset):
     result = [None]*len(valid_chars)
@@ -87,16 +112,11 @@ def generate_stage1_key(offset):
         result[i] = valid_chars[(i+offset) % len(valid_chars)]
     return "".join(result)
    
-def generate_stage2_key():
-    result = [None]*len(valid_chars)
-
+def generate_stage3_key(offset):
+    result = [None]*len(rev_valid_chars)
+    for i in range(len(rev_valid_chars)):
+        result[i] = rev_valid_chars[(i+offset) % len(rev_valid_chars)]
     return "".join(result)
-
-    """
-    #ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ 
-    #ACEGIKMOQSUWYacegikmoqsuwy02468!#%')+-/;=?[]_{} BDFHJLNPRTVXZbdfhjlnprtvxz13579"$&(*,.:<>@\^`|~
-    """
-
 
 
 main()
