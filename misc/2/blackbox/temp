@@ -1,0 +1,18 @@
+input:  ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+output: ABDHPf"g$k,0KVr^=%m:8a1MZzIRj*wCFLXvABDHPf"g$k,0KVr^=%m:8a1MZz
+
+input:  BCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+output: BDHPf"g$k,0KVr^=%m:8a1MZzIRj*wCFLXvABDHPf"g$k,0KVr^=%m:8a1MZz
+
+input:  ABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEFABCDEF
+output: ABDHPf5Up@+yABDHPf5Up@+yABDHPf5Up@+yABDHPf5Up@+yABDHPf5Up@+y
+
+input: GHIJKLGHIJKLGHIJKLGHIJKLGHIJKLGHIJKLGHIJKLGHIJKLGHIJKLGHIJKL
+output: GNb3Qh9c5Up@%m:8a1GNb3Qh9c5Up@%m:8a1GNb3Qh9c5Up@%m:8a1GNb3Qh
+
+input:  ABCDEEDCBAABCDEEDCBAABCDEEDCBAABCDEEDCBAABCDEEDCBA
+output: ABDHPe7Wr\.4Sl.3Ob1KUp@+yFJRh$j*wCFKTl,yFLXvAA }_=
+
+input:  !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ !"#$%&'()*+,-.
+output: !e9c5Up@+yGNb3Qh&o>'q\/6Wt|_?)u~}5Up@+yGNb3Qh&o
+

@@ -25,24 +25,17 @@ def main():
             print "sending: ", sdata
             s.send(sdata + "\n")
         if "Another easy box:" in rdata:
-            s.send("ABABABABABABABA\n")
+            s.send("BBBBBBBB\n")
+            print "BBBBBBBB"
             rdata = s.recv(1024)
             print rdata
 
             sdata = solve_stage_2(rdata)
             print "sending: ", sdata
             s.send(sdata + "\n")
-
-        if "A little harder maybe?" in rdata:
-            s.send("ABABABABABABABA\n")
-            rdata = s.recv(1024)
-            print rdata
-
-            s.send("ABABABABABABABA\n")
-            rdata = s.recv(1024)
-            print rdata
-            
         
+            break
+
     s.close()
 
 def solve_stage_1(rdata):
@@ -59,27 +52,22 @@ def solve_stage_1(rdata):
     return string.translate(expected, rot)
 
 def solve_stage_2(rdata):
-    (password, encoded) = re.match(r'Password \[(.*)\]\s+Expected\s+\[(.*)\]', rdata).groups()
+    (password, expected) = re.match(r'Password \[(.*)\]\s+Expected\s+\[(.*)\]', rdata).groups()
 
-    decoded = ""
-    count = 0 
-    loc = valid_chars.index(encoded[0])
+    key = generate_stage2_key()
+    #key = """ABDHPf"g$k,0KVr^=%m:8a1MZzIRj*wCFLXvABDHPf"g$k,0KVr^=%m:8a1MZz!e9c5Up@+yGNb3Qh&o>'q\/6Wt|_?)u~}"""
 
-    for i in range(len(encoded)):
-        loc = 0 
-        ctry = valid_chars[(loc + count) % len(valid_chars)]
+    print "valid_chars:", valid_chars
+    print "our key    :", key
+    print "password:", password
+    print "expected:", expected
 
-        while ctry != encoded[i]:
-            loc += 1 % len(valid_chars)
-            ctry = valid_chars[(loc + count) % len(valid_chars)]
+    stage2_rot = string.maketrans(
+        key,
+        valid_chars
+    )
 
-        count += loc + count 
-
-        print "loc: ", loc, " count: ", count
-    
-        decoded += valid_chars[loc % len(valid_chars)]
-
-    return decoded
+    return string.translate(expected, stage2_rot)
 
 def generate_stage1_key(offset):
     result = [None]*len(valid_chars)
@@ -89,6 +77,9 @@ def generate_stage1_key(offset):
    
 def generate_stage2_key():
     result = [None]*len(valid_chars)
+
+    for i in range(len(valid_chars)):
+        result[i] = valid_chars[((2**i)-1) % len(valid_chars)]
 
     return "".join(result)
 
